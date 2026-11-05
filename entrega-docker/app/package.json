@@ -1,0 +1,13 @@
+{
+  "name": "notas-api",
+  "version": "1.0.0",
+  "description": "API de notas que guarda y lee datos en PostgreSQL (Entrega proyecto 1 - Docker)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "4.21.1",
+    "pg": "8.13.1"
+  }
+}
