@@ -7,7 +7,6 @@ Repositorio del proyecto NexusQA / QA Copilot.
 | `QACopilot/` | API REST en ASP.NET Core (.NET 10) con Entity Framework y SQL Server |
 | `QACopilot-AI/` | Servicio de IA en Python (FastAPI) |
 | `qa-copilot-front/` | Frontend en Angular |
-| `entrega-docker/` | Ejemplo mínimo de dos contenedores (API de notas + PostgreSQL) |
 
 ## Entrega proyecto 1: NexusQA con Docker (dos contenedores comunicados)
 
