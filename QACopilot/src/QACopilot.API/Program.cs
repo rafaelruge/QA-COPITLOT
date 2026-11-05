@@ -8,6 +8,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using QACopilot.Infrastructure.Services.ExternalServices;
+using QACopilot.Infrastructure.Data.Context;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +40,26 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// En Docker (Database:ApplyMigrations=true) se crean/actualizan las tablas al arrancar.
+if (app.Configuration.GetValue<bool>("Database:ApplyMigrations"))
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<QACopilotDbContext>();
+    for (var intento = 1; ; intento++)
+    {
+        try
+        {
+            db.Database.Migrate();
+            break;
+        }
+        catch (Exception ex) when (intento < 10)
+        {
+            Log.Warning("Base de datos no disponible ({Intento}/10): {Error}", intento, ex.Message);
+            Thread.Sleep(TimeSpan.FromSeconds(5));
+        }
+    }
+}
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
