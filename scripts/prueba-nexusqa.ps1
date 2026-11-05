@@ -1,4 +1,4 @@
-# Prueba de comunicación de ida y vuelta entre la API de NexusQA y SQL Server (Windows PowerShell).
+﻿# Prueba de comunicación de ida y vuelta entre la API de NexusQA y SQL Server (Windows PowerShell).
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $url = "http://localhost:5199"
