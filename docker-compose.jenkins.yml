@@ -1,0 +1,46 @@
+# Jenkins (controlador) + Docker-in-Docker (motor de Docker aislado para los builds)
+services:
+  jenkins:
+    build: ./jenkins
+    image: nexusqa-jenkins:2.580.2
+    container_name: jenkins
+    env_file: .env.jenkins
+    environment:
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: "1"
+    ports:
+      - "8080:8080"   # interfaz web
+      - "50000:50000" # conexión de agentes (inbound)
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-docker-certs:/certs/client:ro
+    depends_on:
+      - docker
+    networks:
+      - red-jenkins
+    restart: unless-stopped
+
+  docker:
+    image: docker:29.10.0-dind
+    container_name: jenkins-docker
+    privileged: true   # requerido por Docker-in-Docker
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+    volumes:
+      - jenkins-data:/var/jenkins_home  # mismo espacio de trabajo que Jenkins
+      - jenkins-docker-certs:/certs/client
+    networks:
+      red-jenkins:
+        aliases: [docker]
+    restart: unless-stopped
+
+networks:
+  red-jenkins:
+    name: red-jenkins
+
+volumes:
+  jenkins-data:
+    name: jenkins-data
+  jenkins-docker-certs:
+    name: jenkins-docker-certs

@@ -1,0 +1,31 @@
+# Plugins de Jenkins para el pipeline de NexusQA (se instalan con jenkins-plugin-cli al construir la imagen)
+# Configuración como código (JCasC): seguridad, credenciales y jobs en YAML
+configuration-as-code
+# Crear los jobs desde la configuración (sin clics)
+job-dsl
+# Pipeline (Jenkinsfile declarativo, incluye Pipeline: Stage View)
+workflow-aggregator
+# Vista gráfica de las etapas del pipeline
+pipeline-graph-view
+# Pipeline: Stage View (vista de etapas en la página del job)
+pipeline-stage-view
+# Descargar el código con Git
+git
+# Integración con GitHub (webhooks, estado de los commits)
+github
+# Multibranch: una ejecución por rama y por pull request
+github-branch-source
+# Docker Pipeline: usar Docker dentro del pipeline
+docker-workflow
+# Inyectar secretos como variables enmascaradas
+credentials-binding
+# Permisos por usuario (matriz de seguridad)
+matrix-auth
+# Hora en cada línea del log
+timestamper
+# Limpiar el espacio de trabajo al terminar
+ws-cleanup
+# Publicar reportes de pruebas
+junit
+# Notificaciones por correo
+mailer

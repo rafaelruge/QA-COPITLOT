@@ -56,3 +56,7 @@ chroma_db/
 *.user
 *.suo
 
+
+# Secretos de Jenkins
+.env.jenkins
+!.env.jenkins.example

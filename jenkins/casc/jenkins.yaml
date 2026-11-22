@@ -1,0 +1,97 @@
+# Configuración como código (JCasC). Los valores ${...} llegan como variables de entorno desde .env.jenkins
+jenkins:
+  systemMessage: "Jenkins de NexusQA - Integración Continua"
+  numExecutors: 2          # laboratorio: el controlador ejecuta builds; en producción 0 y se usan agentes
+  labelString: "docker"
+  mode: EXCLUSIVE          # solo corre jobs que pidan la etiqueta "docker"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID}"
+          name: "Administrador"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+        - id: "desarrollador"
+          name: "Desarrollador QA"
+          password: "${JENKINS_DEV_PASSWORD}"
+  authorizationStrategy:
+    globalMatrix:
+      entries:
+        - user:
+            name: "${JENKINS_ADMIN_ID}"
+            permissions:
+              - "Overall/Administer"
+        - user:
+            name: "desarrollador"
+            permissions:
+              - "Overall/Read"
+              - "Job/Read"
+              - "Job/Build"
+              - "Job/Cancel"
+              - "View/Read"
+  crumbIssuer: "standard"  # protección CSRF
+
+security:
+  gitHostKeyVerificationConfiguration:
+    sshHostKeyVerificationStrategy: "knownHostsFileVerificationStrategy"
+
+unclassified:
+  location:
+    url: "http://localhost:8080/"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "github-token"
+              description: "Token de GitHub (lectura del repositorio y estado de commits)"
+              username: "${GITHUB_USER}"
+              password: "${GITHUB_TOKEN}"
+          - string:
+              scope: GLOBAL
+              id: "nexusqa-mssql-sa-password"
+              description: "Contraseña sa de SQL Server"
+              secret: "${MSSQL_SA_PASSWORD}"
+          - string:
+              scope: GLOBAL
+              id: "nexusqa-jwt-secret"
+              description: "Clave para firmar JWT"
+              secret: "${JWT_SECRET_KEY}"
+          - string:
+              scope: GLOBAL
+              id: "nexusqa-encryption-key"
+              description: "Clave de cifrado de la API"
+              secret: "${ENCRYPTION_KEY}"
+
+jobs:
+  # Job "Pipeline script from SCM": lee el Jenkinsfile de la rama main del repositorio.
+  # El disparo automático (Poll SCM) lo define el propio Jenkinsfile en "triggers".
+  - script: >
+      pipelineJob('nexusqa') {
+        displayName('NexusQA - CI')
+        description('Construye y prueba los dos contenedores de NexusQA en cada push a main')
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('https://github.com/rafaelruge/QA-COPITLOT.git')
+                  credentials('github-token')
+                }
+                branch('*/main')
+              }
+            }
+            scriptPath('Jenkinsfile')
+            lightweight(true)
+          }
+        }
+        properties {
+          pipelineTriggers {
+            triggers {
+              pollSCM { scmpoll_spec('H/2 * * * *') }
+            }
+          }
+        }
+      }
