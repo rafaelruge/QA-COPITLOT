@@ -10,7 +10,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development # habilita Swagger en /swagger
       # La API llega a la base de datos por el NOMBRE DEL SERVICIO "sqlserver", no por localhost ni IP
-      ConnectionStrings__DefaultConnection: "Server=sqlserver-roto,1433;Database=NexusQA;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=NexusQA;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;"
       Database__ApplyMigrations: "true" # crea las tablas al arrancar
       JwtSettings__SecretKey: ${JWT_SECRET_KEY}
       Security__EncryptionKey: ${ENCRYPTION_KEY}
