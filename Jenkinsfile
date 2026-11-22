@@ -21,7 +21,7 @@ pipeline {
         ENCRYPTION_KEY    = credentials('nexusqa-encryption-key')
         API_PORT = '5199'
         // Con Docker-in-Docker los puertos se publican en el host "docker", no en localhost
-        URL = 'http://docker:5199'
+        API_URL = 'http://docker:5199'
         COMPOSE_PROJECT_NAME = 'nexusqa-ci'
     }
 
@@ -52,7 +52,7 @@ pipeline {
                 // Si cualquier paso falla, el script sale con error y el build queda en rojo.
                 sh '''#!/bin/bash
                     set -o pipefail
-                    bash scripts/prueba-nexusqa.sh 2>&1 | tee prueba-nexusqa.log
+                    URL="$API_URL" bash scripts/prueba-nexusqa.sh 2>&1 | tee prueba-nexusqa.log
                 '''
             }
         }
