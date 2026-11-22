@@ -88,3 +88,25 @@ docker compose down -v     # borra también el volumen
 `.github/workflows/nexusqa-ci.yml` se ejecuta en cada push y pull request: valida el
 compose, construye la imagen con `docker build` y `docker compose build`, levanta los dos
 servicios y ejecuta la prueba de registro e inicio de sesión.
+
+## Entrega proyecto 2: integración continua con Jenkins
+
+Jenkins (imagen oficial LTS con volumen `jenkins-data`) construye y prueba los dos
+contenedores de NexusQA en cada push a `main`.
+
+| Archivo | Papel |
+|---------|-------|
+| `Jenkinsfile` | Pipeline como código: etapas Checkout, Build y Test, y bloque `post` |
+| `docker-compose.jenkins.yml` | Jenkins + Docker-in-Docker (motor aislado para los builds) |
+| `jenkins/Dockerfile` | `jenkins/jenkins:2.580.2-lts-jdk21` con cliente Docker y plugins |
+| `jenkins/plugins.txt` | Git, GitHub, Pipeline, Docker Pipeline, Stage View, JCasC, etc. |
+| `jenkins/casc/jenkins.yaml` | Usuarios, permisos, credenciales y job (configuración como código) |
+| `.env.jenkins.example` | Plantilla de secretos (el `.env.jenkins` real NO se sube) |
+
+```bash
+cp .env.jenkins.example .env.jenkins     # PowerShell: Copy-Item .env.jenkins.example .env.jenkins
+docker compose -f docker-compose.jenkins.yml up -d --build
+# Abrir http://localhost:8080
+```
+
+El job `NexusQA - CI` revisa GitHub cada 2 minutos (Poll SCM) y lanza el pipeline cuando hay commits nuevos.
