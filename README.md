@@ -110,3 +110,5 @@ docker compose -f docker-compose.jenkins.yml up -d --build
 ```
 
 El job `NexusQA - CI` revisa GitHub cada 2 minutos (Poll SCM) y lanza el pipeline cuando hay commits nuevos.
+
+Prueba de disparo automático de Jenkins.
