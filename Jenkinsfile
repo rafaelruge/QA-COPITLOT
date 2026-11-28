@@ -36,12 +36,13 @@ pipeline {
             steps {
                 // Valida el docker-compose.yml de la Entrega 1
                 sh 'docker compose config --quiet'
-                // Servicio 1: construye la imagen de la API con su Dockerfile
-                sh 'docker compose build api'
+                // Construye las imágenes de los DOS servicios con sus Dockerfile:
+                //   api       -> QACopilot/Dockerfile
+                //   sqlserver -> sqlserver/Dockerfile (FROM la imagen oficial de Microsoft)
+                sh 'docker compose build --pull api sqlserver'
                 sh 'docker tag nexusqa-api:1.0.0 nexusqa-api:${BUILD_NUMBER}'
-                // Servicio 2: descarga la imagen oficial de SQL Server con versión fija
-                sh 'docker compose pull sqlserver'
-                sh 'docker image ls --filter reference="nexusqa-api" --filter reference="mcr.microsoft.com/mssql/server"'
+                sh 'docker tag nexusqa-sqlserver:1.0.0 nexusqa-sqlserver:${BUILD_NUMBER}'
+                sh 'docker image ls --filter reference="nexusqa-api" --filter reference="nexusqa-sqlserver"'
             }
         }
         stage('Test') {

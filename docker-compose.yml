@@ -26,11 +26,13 @@ services:
 
   # Contenedor 2: base de datos SQL Server
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04
+    # Imagen propia (sqlserver/Dockerfile) construida desde la oficial de Microsoft
+    build:
+      context: ./sqlserver
+      dockerfile: Dockerfile
+    image: nexusqa-sqlserver:1.0.0
     container_name: nexusqa-sqlserver
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: Developer
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
     volumes:
       - datos-sqlserver:/var/opt/mssql
